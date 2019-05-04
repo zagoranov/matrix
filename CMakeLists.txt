@@ -8,6 +8,12 @@ endif()
 
 add_executable(matrix_cli main.cpp)
 
+set_target_properties(matrix_cli PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+    COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
+)
+
 set_target_properties(matrix_cli PROPERTIES LINK_FLAGS -pthread
 )
 
