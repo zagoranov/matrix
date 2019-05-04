@@ -103,5 +103,5 @@ int main()
 		std::tie(x, y, v) = c;
 		std::cout << "[" << x <<"]["<< y << "] = " << v << "; ";
 	}
-	std::system("pause");
+	//std::system("pause");
 }
