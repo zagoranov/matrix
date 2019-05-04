@@ -12,4 +12,4 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-  - curl -T matrix-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uromanmuz:$BINTRAY_API_KEY https://api.bintray.com/content/romanmuz/task1/ipfiter/$TRAVIS_BUILD_NUMBER/matrix-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb
+  - curl -T matrix-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uromanmuz:$BINTRAY_API_KEY https://api.bintray.com/content/romanmuz/task1/matrix/$TRAVIS_BUILD_NUMBER/matrix-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb
