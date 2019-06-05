@@ -14,7 +14,7 @@ set_target_properties(matrix_cli PROPERTIES
     COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
 )
 
-set_target_properties(matrix_cli PROPERTIES LINK_FLAGS -pthread
+set_target_properties(matrix_cli PROPERTIES LINK_FLAGS
 )
 
 install(TARGETS matrix_cli RUNTIME DESTINATION bin)
