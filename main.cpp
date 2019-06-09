@@ -1,57 +1,53 @@
 #include <iostream>
 #include <map>
+#include <vector>
 #include <cassert>
 #include <iterator>
+#include <string>
 
 
-template<typename T, T defValue, size_t N>
+template<typename T, T defValue, size_t Dimension>
 class Matrix {
-	using RetTuple = std::tuple<long, long, T>;
-	std::map<std::pair<long, long>, T> MatrixData;
+	std::map<std::vector<unsigned>, T> MatrixData;
 	T dvalue;
-
+	size_t dim;
 public:
-	size_t iN;
-
-	Matrix() { 
-		dvalue = defValue;
-		iN = N;
-	}
+	Matrix() : dvalue(defValue), dim(Dimension) { }
 	~Matrix() {}
 	size_t size() const { return MatrixData.size(); }
-
+	size_t dimension() const { return dim; }
 
 	class ref
 	{
 		Matrix& cont_;
-		long row_;
-		long column_;
+		std::vector<unsigned> indexes;
 	public:
-		ref(Matrix& cont, long i) : cont_(cont), row_(i),column_(-1) {}
+		ref(Matrix& cont, long i) : cont_(cont) { indexes.push_back(i); }
+		
 		operator const T& () const { 
-			auto pos = std::make_pair(row_, column_);
-			auto it = cont_.MatrixData.find(pos);
+			auto it = cont_.MatrixData.find(indexes);
 			if (it == cont_.MatrixData.end())
 				return cont_.dvalue;
 			else 
 				return it->second;
 		}
+		
 		ref& operator [](long i)
 		{
-			if (column_ > -1) {
+			if (indexes.size() + 1 > cont_.dimension()) {
 				throw std::overflow_error("Too much index arguments");
 			}
 			else {
-				column_ = i;
+				indexes.push_back(i);
 			}
 			return *this;
 		}
+		
 		ref& operator=(T value)
 		{
-			if(column_ < 0)
+			if(indexes.size() < cont_.dimension())
 				throw std::overflow_error("Not enough index arguments");
-			auto pos = std::make_pair(row_, column_);
-			auto it = cont_.MatrixData.find(pos);
+			auto it = cont_.MatrixData.find(indexes);
 			if (it != cont_.MatrixData.end()) {
 				if (value == cont_.dvalue)
 					cont_.MatrixData.erase(it);
@@ -59,8 +55,9 @@ public:
 					(*it).second = value;
 			}
 			else
-				if (value != cont_.dvalue)
-					cont_.MatrixData.insert({ pos, value });
+				if (value != cont_.dvalue) {
+					cont_.MatrixData.insert({ indexes, value });
+				}
 			return *this;
 		}
 	};
@@ -71,20 +68,22 @@ public:
 
 	class iterator {
 	public:
-		typename std::map<std::pair<long, long>, T>::iterator it;
-		iterator(typename std::map<std::pair<long, long>, T>::iterator _it) : it(_it) {}
+		typename std::map<std::vector<unsigned>, T>::iterator it;
+		iterator(typename std::map<std::vector<unsigned>, T>::iterator _it) : it(_it) {}
 		bool operator!=(const iterator & other) const {	return it != other.it;	}
 		iterator operator++() {	++it; 	return *this; }
-		RetTuple operator*() {
-			long l1 = (*it).first.first;
-			long l2 = (*it).first.second;
-			return std::make_tuple(l1, l2, (*it).second);
-		}
+		std::pair<std::vector<unsigned>, T> operator*() { return *it; }
 	};
 	iterator begin() { return MatrixData.begin(); }
 	iterator end() { return MatrixData.end(); }
 };
 
+
+std::string Accumulate(std::vector<unsigned>& v) {
+	std::string result;
+	for (unsigned const& u : v) { result += "[" + std::to_string(u) + "]"; }
+	return result;
+}
 
 
 int main()
@@ -104,16 +103,11 @@ int main()
 	}
 
 	std::cout << "Size: " << matrix.size() << std::endl;
-
+	
 	for (auto c : matrix)
 	{
-		int x;
-		int y;
-		int v;
-		std::tie(x, y, v) = c;
-		std::cout << "[" << x <<"]["<< y << "] = " << v << "; ";
+		std::cout << Accumulate(c.first) << " = " << c.second << "; ";
 	}
-
 
 	//int i;  std::cin >> i;
 }
