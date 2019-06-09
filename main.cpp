@@ -4,20 +4,23 @@
 #include <iterator>
 
 
-template<typename T, T defValue>
+template<typename T, T defValue, size_t N>
 class Matrix {
 	using RetTuple = std::tuple<long, long, T>;
 	std::map<std::pair<long, long>, T> MatrixData;
 	T dvalue;
 
 public:
+	size_t iN;
+
 	Matrix() { 
 		dvalue = defValue;
+		iN = N;
 	}
 	~Matrix() {}
 	size_t size() const { return MatrixData.size(); }
 
-	//[][]
+
 	class ref
 	{
 		Matrix& cont_;
@@ -35,9 +38,12 @@ public:
 		}
 		ref& operator [](long i)
 		{
-			if (column_ > -1)
+			if (column_ > -1) {
 				throw std::overflow_error("Too much index arguments");
-			column_ = i;
+			}
+			else {
+				column_ = i;
+			}
 			return *this;
 		}
 		ref& operator=(T value)
@@ -46,12 +52,15 @@ public:
 				throw std::overflow_error("Not enough index arguments");
 			auto pos = std::make_pair(row_, column_);
 			auto it = cont_.MatrixData.find(pos);
-			if (value == cont_.dvalue) {
-				if (it != cont_.MatrixData.end())
+			if (it != cont_.MatrixData.end()) {
+				if (value == cont_.dvalue)
 					cont_.MatrixData.erase(it);
+				else
+					(*it).second = value;
 			}
 			else
-				cont_.MatrixData.insert({ pos, value });
+				if (value != cont_.dvalue)
+					cont_.MatrixData.insert({ pos, value });
 			return *this;
 		}
 	};
@@ -66,7 +75,7 @@ public:
 		iterator(typename std::map<std::pair<long, long>, T>::iterator _it) : it(_it) {}
 		bool operator!=(const iterator & other) const {	return it != other.it;	}
 		iterator operator++() {	++it; 	return *this; }
-		RetTuple operator*() { 
+		RetTuple operator*() {
 			long l1 = (*it).first.first;
 			long l2 = (*it).first.second;
 			return std::make_tuple(l1, l2, (*it).second);
@@ -80,7 +89,7 @@ public:
 
 int main()
 {
-	Matrix<int, 0> matrix;
+	Matrix<int, 0, 2> matrix;
 	assert(matrix.size() == 0); 
 
 	for (size_t i = 0; i < 10; ++i)
@@ -104,6 +113,7 @@ int main()
 		std::tie(x, y, v) = c;
 		std::cout << "[" << x <<"]["<< y << "] = " << v << "; ";
 	}
+
 
 	//int i;  std::cin >> i;
 }
