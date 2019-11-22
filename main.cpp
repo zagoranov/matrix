@@ -105,7 +105,7 @@ int main()
 
 		std::cout << "Size: " << matrix.size() << std::endl;
 
-		for (auto c : matrix)
+		for (const auto& c : matrix)
 		{
 			std::cout << Accumulate(c.first) << " = " << c.second << "; ";
 		}
